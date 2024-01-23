@@ -18,3 +18,25 @@ kubectl get pods -o wide --namespace dev
 kubectl get pods -o wide --namespace testc
 
 kubectl api-resources
+
+
+//Command to create pods(or apply whatever is there in manifest file):
+kubectl apply -f pod1.yml
+//Command to get all the pods in your cluster:
+kubectl get pods
+//Command to get all the pods in your cluster(in detail):
+kubectl get pods -o wide
+//Command to get the details of a particular pod:
+kubectl describe pod testpod
+//Command to check the logs of particular container in a pod
+kubectl logs -f multicontainerpod -c c01
+//Command to delete a pod:
+kubectl delete pod testpod
+//Command to get the pod details along with the labels:
+kubectl get pods --show-labels
+//Command to create a label for a pod:
+kubectl label pods multicontainerpod env=production
+//Command to get the pods with articular label:
+kubectl get pods -l env=development
+//Command to get inside the pod:
+kubectl exec -it saturdaypod -- /bin/bash
