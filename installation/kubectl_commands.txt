@@ -1,0 +1,20 @@
+kubectl run app1-pod --image=nginx:latest
+kubectl get pods
+kubectl describe pod app1-pod
+kubectl get pods							
+kubectl get pods -o wide
+kubectl logs app1-pod
+kubectl exec -it app1-pod -- /bin/bash
+kubectl delete pod app1-pod
+curl 192.168.87.131:80
+
+kubectl get pods -o wide --all-namespaces
+kubectl get pods -o wide --namespace kube-system
+kubectl get namespaces
+kubectl create namespace dev
+kubectl create namespace test
+kubectl run app2-pod --image=nginx:latest --namespace dev
+kubectl get pods -o wide --namespace dev
+kubectl get pods -o wide --namespace testc
+
+kubectl api-resources
