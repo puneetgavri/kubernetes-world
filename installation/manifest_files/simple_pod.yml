@@ -1,0 +1,13 @@
+kind: Pod
+apiVersion: v1
+metadata:
+   name: applepod
+   labels:
+    environment: production
+    app: finance
+spec:
+   containers:
+      - name: c1
+        image: ubuntu
+        command: ["/bin/bash", "-c", "while true; do echo Hello-Apple; sleep 5 ; done"]
+   restartPolicy: Never         # Defaults to Always
