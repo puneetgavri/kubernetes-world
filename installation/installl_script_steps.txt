@@ -4,12 +4,20 @@ Step1: On Master Node Only
 sudo wget https://raw.githubusercontent.com/puneetgavri/kubernetes-world/main/installation/scripts/installDocker.sh -P /tmp
 sudo chmod 755 /tmp/installDocker.sh
 sudo bash /tmp/installDocker.sh
+sudo systemctl restart docker.service
+
+## Install CRI-Docker
+
+sudo wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installCRIDockerd.sh -P /tmp
+sudo chmod 755 /tmp/installCRIDockerd.sh
+sudo bash /tmp/installCRIDockerd.sh
+sudo systemctl restart cri-docker.service
 
 ## Install kubeadm,kubelet,kubectl
 
-sudo wget https://raw.githubusercontent.com/puneetgavri/kubernetes-world/main/installation/scripts/installK8S-v1-23.sh -P /tmp
-sudo chmod 755 /tmp/installK8S-v1-23.sh
-sudo bash /tmp/installK8S-v1-23.sh
+sudo wget https://raw.githubusercontent.com/puneetgavri/kubernetes-world/main/installation/scripts/installK8S.sh -P /tmp
+sudo chmod 755 /tmp/installK8S.sh
+sudo bash /tmp/installK8S.sh
 
 ## Initialize kubernetes Master Node
  
@@ -33,12 +41,20 @@ Step2: On All Worker Nodes
 sudo wget https://raw.githubusercontent.com/puneetgavri/kubernetes-world/main/installation/scripts/installDocker.sh -P /tmp
 sudo chmod 755 /tmp/installDocker.sh
 sudo bash /tmp/installDocker.sh
+sudo systemctl restart docker.service
+
+## Install CRI-Docker
+
+sudo wget https://raw.githubusercontent.com/puneetgavri/kubernetes-world/main/installation/scripts/installCRIDockerd.sh -P /tmp
+sudo chmod 755 /tmp/installCRIDockerd.sh
+sudo bash /tmp/installCRIDockerd.sh
+sudo systemctl restart cri-docker.service
 
 ## Install kubeadm,kubelet,kubectl
 
-sudo wget https://raw.githubusercontent.com/puneetgavri/kubernetes-world/main/installation/scripts/installK8S-v1-23.sh -P /tmp
-sudo chmod 755 /tmp/installK8S-v1-23.sh
-sudo bash /tmp/installK8S-v1-23.sh
+sudo wget https://raw.githubusercontent.com/puneetgavri/kubernetes-world/main/installation/scripts/installK8S.sh -P /tmp
+sudo chmod 755 /tmp/installK8S.sh
+sudo bash /tmp/installK8S.sh
 
 ## Run Below on Master Node to get join token 
 
