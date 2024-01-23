@@ -27,4 +27,145 @@ Therefore, it’s recommended to disable swap before installing Kubernetes.
 Commands: 
 sudo swapoff -
 sudo sed -i '/ swap / s/^/#/' /etc/fstab
+-------------------------------------------------------------------------------------------
+Step 2: Set up hostnames
+to give unique hostnames for nodes so that Kubernetes can use these names to identify nodes
+Commands:
+On master node: sudo hostnamectl set-hostname "master-node"
+on worker node1: sudo hostnamectl set-hostname "worker-node1"
+on worker node2: sudo hostnamectl set-hostname "worker-node2"
 
+Run the command "exec bash" to refresh your current bash session so that it can recognize and use the new hostname immediately.
+------------------------------------------------------------------------------------------
+
+Step 3: Set up the IPV4 bridge on all nodes
+To configure the IPV4 bridge on all nodes, execute the following commands on each node.
+Command:
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+EOF
+
+sudo modprobe overlay
+sudo modprobe br_netfilter
+
+# sysctl params required by setup, params persist across reboots
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
+EOF
+
+# Apply sysctl params without reboot
+sudo sysctl --system
+
+---------------------------------------------------------------------------
+Step 4: Install kubelet, kubeadm, and kubectl on each node
+Let’s install kubelet, kubeadm, and kubectl on each node to create a Kubernetes cluster. They play an important role in managing a Kubernetes cluster.
+
+Kubelet is the node agent that runs on every node and is responsible for ensuring containers are running in a Pod as specified by the Pod's specifications. (Pods are the smallest deployable units in a Kubernetes cluster).
+
+Then we need to install kubeadm, which is used to bootstrap a Kubernetes cluster, including setting up the master node and helping worker nodes join the cluster.
+
+Kubectl is a CLI tool for Kubernetes to run commands to perform various actions such as deploying applications, inspecting resources, and managing cluster operations directly from the terminal.
+
+// Before installing them, you must update the package index with the sudo apt-get update command.
+
+Command:
+sudo apt-get update
+
+// Next, we have to ensure that we can download and install packages from the internet securely.
+
+Command:
+sudo apt-get install -y apt-transport-https ca-certificates curl
+
+// we have to create a directory where we'll store a special key that verifies the authenticity of Kubernetes packages. It's like checking an ID card before allowing someone into a building.
+
+Command:
+sudo mkdir /etc/apt/keyrings
+
+//fetch the public key from Google and store it in the folder we created in the previous step. This key is important to verify that the Kubernetes packages we download are genuine and haven't been tampered with.
+
+Command:
+curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+
+//tell the apt package manager where to find Kubernetes packages for downloading.
+
+Command:
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+// refresh the apt package index to see new items by running the sudo apt-get update
+
+Command:
+sudo apt-get update
+
+// install kubelet, kubeadm, and kubectl 
+Command:
+sudo apt install -y kubelet=1.26.5-00 kubeadm=1.26.5-00 kubectl=1.26.5-00
+--------------------------------------------------------------------------------------------------------------------
+Step 5: Install Docker
+Command:
+sudo apt install docker.io
+
+// configure containerd on all nodes to ensure its compatibility with Kubernetes.
+Command:
+sudo mkdir /etc/containerd
+sudo sh -c "containerd config default > /etc/containerd/config.toml"
+
+// need to modify the config.toml file to locate the entry that sets "SystemdCgroup" to false and changes its value to true. This is important because Kubernetes requires all its components, and the container runtime uses systemd for cgroups.
+Command:
+sudo sed -i 's/ SystemdCgroup = false/ SystemdCgroup = true/' /etc/containerd/config.toml
+
+// restart containerd and kubelet services to apply the changes you made on all nodes
+Command:
+sudo systemctl restart containerd.service
+sudo systemctl restart kubelet.service
+sudo systemctl enable kubelet.service
+
+-------------------------------------------------------------------------------------------------------------
+Step 6: Initialize the Kubernetes cluster on the master node
+
+initialize your master node. The --pod-network-cidr flag is setting the IP address range for the pod network.
+
+Command:
+sudo kubeadm init --pod-network-cidr=10.10.0.0/16
+
+You will see an output similar to below:
+kubeadm join 172.31.3.70:6443 --token obb31v.q7n3jyqzwrojt78y \
+        --discovery-token-ca-cert-hash sha256:ddc163905f6b1614cafa07c838e112064e7edbae297688c690adc0e8306a41d2
+
+// Create the .kube directory in your home folder and copy the cluster's admin configuration to your personal .kube directory. Next, change the ownership of the copied configuration file to give the user the permission to use the configuration file to interact with the cluster.
+Commands:
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+---------------------------------------------------------------------------------------------------
+
+Step 7: Configure kubectl and Calico
+Run the following commands on the master node to deploy the Calico operator.
+Command:
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
+
+Next, download the custom resources file for Calico, which contains definitions of the various resources that Calico will use.
+Command:
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/custom-resources.yaml -O
+
+Using the following command, modify the CIDR in the downloaded custom resources to match your pod network. Here, you're using the sed command to change the default CIDR value in the Calico custom resources to match the CIDR you used in the kubeadm init command.
+Command:
+sed -i 's/cidr: 192\.168\.0\.0\/16/cidr: 10.10.0.0\/16/g' custom-resources.yaml
+
+Finally, tell kubectl to create the resources defined in the custom-resources.yaml file.
+Command:
+kubectl create -f custom-resources.yaml
+
+-------------------------------------------------------------------------------------------------------------
+Step 8: Add worker nodes to the cluster
+Run the join command we got in the output of Step 6 with sudo
+example:
+sudo kubeadm join 172.31.3.70:6443 --token obb31v.q7n3jyqzwrojt78y \
+        --discovery-token-ca-cert-hash sha256:ddc163905f6b1614cafa07c838e112064e7edbae297688c690adc0e8306a41d2
+
+-------------------------------------------------------------------------------------------------
+Step 9: Verify the cluster and test
+Command:
+kubectl get nodes
