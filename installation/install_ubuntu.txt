@@ -1,0 +1,30 @@
+To install Kubernetes on your Ubuntu machine, make sure it meets the following requirements:
+
+2 CPUs
+At least 2GB of RAM
+At least 2 GB of Disk Space
+A reliable internet connection
+
+Overall, installing Kubernetes on Ubuntu involves steps such as:
+
+- Disabling swap;
+- Setting up hostnames;
+- Setting up the IPV4 bridge on all nodes;
+- Installing Kubernetes components on all nodes;
+- Installing Docker or a suitable containerization tool;
+- Initializing the Kubernetes cluster;
+- Configuring Kubectl and Calico;
+- Adding worker nodes.
+
+Step 1: Disable swap
+You might know about swap space on hard drives, which OS systems try to use as if it were RAM. 
+Operating systems try to move less frequently accessed data to the swap space to free up RAM for more immediate tasks. 
+However, accessing data in swap is much slower than accessing data in RAM because hard drives are slower than RAM.
+Kubernetes schedules work based on the understanding of available resources. 
+If workloads start using swap, it can become difficult for Kubernetes to make accurate scheduling decisions. 
+Therefore, it’s recommended to disable swap before installing Kubernetes.
+
+Commands: 
+sudo swapoff -
+sudo sed -i '/ swap / s/^/#/' /etc/fstab
+
