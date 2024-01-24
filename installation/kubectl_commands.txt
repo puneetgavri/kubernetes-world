@@ -40,3 +40,22 @@ kubectl label pods multicontainerpod env=production
 kubectl get pods -l env=development
 //Command to get inside the pod:
 kubectl exec -it saturdaypod -- /bin/bash
+
+
+controllers:
+
+kubectl get rs
+//Command to describe a particular replica set
+kubectl describe rs myrs
+//Command to change the number of replicas/scaling for replica set object
+kubectl scale --replicas=5 rs myrs
+//Command to get the deployment objects
+kubectl get deploy
+//Command to describe a particular replica set
+kubectl describe deploy mydeployments
+//Command to change the number of replicas/scaling for deployment object
+kubectl scale --replicas=3 deploy mydeployments
+//Command to check the status of deployment rollout
+kubectl rollout status deployment mydeployments
+//Command to rollback to the old version
+kubectl rollout undo deployment mydeployments
