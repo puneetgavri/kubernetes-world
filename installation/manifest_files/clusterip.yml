@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydeployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      env: dev
+  template:
+    metadata:
+      labels:
+        env: dev
+    spec:
+      containers:
+      - name: myapp-cont
+        image: nginx:1.14.2
+        ports:
+         - containerPort: 80
+        command: ["/bin/sh", "-c", "hostname > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cipservice
+spec:
+  type: ClusterIP  ## this is default if we do not type in service definition
+  selector:
+    env: dev
+  ports:
+   - port: 80
