@@ -13,16 +13,15 @@ kubectl apply -f https://raw.githubusercontent.com/puneetgavri/kubernetes-world/
 **Get Ingress Controller Service NodePort**
 
   kubectl get ingress
+  
   kubectl describe ingress <ingress-name>
-  kubectl get services -n ingress-nginx      ## Note the Ingress Servcie NodePort
+  
+  kubectl get services -n ingress-nginx
 
   
 **validate
    From the above details noted in your browser hit as below**
    
-   masterNodeIp:NodePort/app1
-   worker1NodeIp:NodePort/app2
-   worker2NodeIp:NodePort/app3
-   
-   Example: 192.168.198.129:30528/app1, 192.168.198.129:30528/app2, 192.168.198.129:30528/app3
+   http://any node public ip:NodePort/app1
+
    
