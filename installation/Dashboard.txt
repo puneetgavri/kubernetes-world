@@ -1,0 +1,55 @@
+Step1-->
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+---------------------------------------------------------------------
+Step2-->
+Create manifest files for service account:
+vi admin-user-service-account.yaml
+and put below content in it:
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+-------------------------------------------------------------------------
+Step3-->
+Create manifest files for cluster-role-binding:
+vi admin-user-cluster-role-binding.yaml
+and put below content in it:
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+----------------------------------------------------------------------------------------
+Step4--> execute the manifest files:
+
+kubectl apply -f admin-user-service-account.yaml -f admin-user-cluster-role-binding.yaml
+------------------------------------------------------------------------------------
+Step 5--> Create Token and save it somewhere:
+
+kubectl -n kubernetes-dashboard create token admin-user
+-------------------------------------------------------------------
+Step 6 --> Edit the Kubernetes dasboard service
+kubectl edit svc/kubernetes-dashboard -n kubernetes-dashboard
+
+This would open up the service specification . Just replace "ClusterIP" with "NodePort".
+Get the Nodeport using below command and copy it:
+
+kubectl get svc -n kubernetes-dashboard -n kubernetes-dashboard
+
+---------------------------------------------------------------------------------------
+
+Step 7- --> 
+Access the dashboard uisng :
+https://<IP of any node of your cluster>:<Nodeport recieved in previous step>
+
+and paste the token
