@@ -1,4 +1,4 @@
-# ** Persistent Volumes (PV) and Persistent Volume Claims (PVC) in Kubernetes**
+# **Persistent Volumes (PV) and Persistent Volume Claims (PVC) in Kubernetes**
 
 ## **1. Why Do We Need PVs and PVCs?**
 By default, containers in Kubernetes are **ephemeral**, meaning:
@@ -15,6 +15,7 @@ A **Persistent Volume (PV)** is a **pre-provisioned** storage resource in Kubern
 - It **exists independently** of Pods.
 - It can be backed by cloud storage (AWS EBS, GCP Persistent Disk, Azure Disk), network storage (NFS, CephFS), or on-prem storage.
 - It has **specific properties**, such as storage capacity, access modes, and reclaim policies.
+- **Created by cluster administrators** to provide persistent storage.
 
 ### **Example of a Persistent Volume (PV)**
 ```yaml
@@ -47,6 +48,7 @@ A **Persistent Volume Claim (PVC)** is a **request** for storage by a Pod.
 - A Pod does not claim storage directly; instead, it **requests storage using a PVC**.
 - The PVC looks for a **matching PV** and binds to it.
 - If a StorageClass is used, Kubernetes **dynamically creates a PV** for the PVC.
+- **PVCs are created by developers** who need storage for their applications.
 
 ### **Example of a Persistent Volume Claim (PVC)**
 ```yaml
@@ -65,10 +67,18 @@ spec:
 
 ---
 
-## **4. Using a PVC in a Pod**
+## **4. How a PVC Claims a PV**
+1. A **cluster administrator** creates PVs.
+2. A **developer** creates a PVC.
+3. Kubernetes automatically **binds** the PVC to a matching PV based on:
+   - **Storage capacity** (PVC requests ≤ PV available storage)
+   - **Access modes** (PVC must match PV’s access mode)
+   - **StorageClass** (PVC requests a specific StorageClass, PV must have the same StorageClass)
+4. Once bound, the **PVC and PV remain connected** until the PVC is deleted.
+
+### **Using a PVC in a Pod**
 Once a PVC is created, a **Pod can use it as a volume**.
 
-### **Example: Pod Using a PVC**
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -102,6 +112,8 @@ A **StorageClass** in Kubernetes allows dynamic provisioning of Persistent Volum
 |------------|----------------------|----------------------|
 | **Definition** | A pre-provisioned storage unit | A template for dynamically provisioning PVs |
 | **Management** | Manually created and managed | Dynamically provisions PVs on demand |
+| **Who Creates It?** | Cluster Administrator | Cluster Administrator |
+| **Who Uses It?** | Developers request it via PVCs | Developers request storage using PVCs |
 | **Binding** | Bound to a PVC upon request | Used by PVCs to create PVs dynamically |
 | **Flexibility** | Fixed configuration | More flexible, can create PVs with different settings |
 | **Use Case** | Used when static storage allocation is needed | Preferred for cloud environments where dynamic storage is required |
@@ -161,3 +173,6 @@ spec:
     pdName: my-disk
     fsType: ext4
 ```
+
+---
+
