@@ -55,7 +55,16 @@ kubectl get deploy
 kubectl describe deploy mydeployments
 //Command to change the number of replicas/scaling for deployment object
 kubectl scale --replicas=3 deploy mydeployments
-//Command to check the status of deployment rollout
-kubectl rollout status deployment mydeployments
-//Command to rollback to the old version
-kubectl rollout undo deployment mydeployments
+
+
+ROllout deployment example:
+
+kubectl create deployment nginx-deploy --image=nginx:1.24
+kubectl rollout status deployment/nginx-deploy
+kubectl set image deployment/nginx-deploy nginx=nginx:1.25
+kubectl rollout status deployment/nginx-deploy
+kubectl rollout history deployment/nginx-deploy
+kubectl set image deployment/nginx-deploy nginx=nginx:nonexistent
+kubectl rollout status deployment/nginx-deploy
+kubectl rollout undo deployment/nginx-deploy
+
