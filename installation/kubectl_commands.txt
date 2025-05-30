@@ -67,4 +67,5 @@ kubectl rollout history deployment/nginx-deploy
 kubectl set image deployment/nginx-deploy nginx=nginx:nonexistent
 kubectl rollout status deployment/nginx-deploy
 kubectl rollout undo deployment/nginx-deploy
+kubectl rollout undo deployment/nginx-deploy --to-version=1
 
