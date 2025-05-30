@@ -59,7 +59,7 @@ kubectl scale --replicas=3 deploy mydeployments
 
 ROllout deployment example:
 
-kubectl create deployment nginx-deploy --image=nginx:1.24
+kubectl create deployment nginx-deploy --image=nginx:1.24 --replicas=3
 kubectl rollout status deployment/nginx-deploy
 kubectl set image deployment/nginx-deploy nginx=nginx:1.25
 kubectl rollout status deployment/nginx-deploy
