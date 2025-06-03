@@ -4,7 +4,7 @@ metadata:
   name: myvolumes-pod
 spec:
   containers:
-  - image: centos
+  - image: alpine
     imagePullPolicy: IfNotPresent
     name: myvolumes-container-1
     command: ['sh', '-c', 'echo The Bench Container 1 is Running ; sleep 3600']
@@ -12,7 +12,7 @@ spec:
     - mountPath: /demo1
       name: demo-volume
 
-  - image: ubuntu  
+  - image: alpine  
     imagePullPolicy: IfNotPresent
     name: myvolumes-container-2
     command: ['/bin/bash', '-c', 'echo The Bench Container 2 is Running ; sleep 3600']
