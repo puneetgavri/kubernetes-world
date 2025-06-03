@@ -15,7 +15,7 @@ spec:
   - image: alpine  
     imagePullPolicy: IfNotPresent
     name: myvolumes-container-2
-    command: ['/bin/bash', '-c', 'echo The Bench Container 2 is Running ; sleep 3600']
+    command: ['sh', '-c', 'echo The Bench Container 2 is Running ; sleep 3600']
     volumeMounts:
     - mountPath: /demo2
       name: demo-volume
