@@ -1,0 +1,14 @@
+eksctl command:
+eksctl create cluster \
+  --name myekscluster \
+  --region ap-northeast-1 \
+  --version 1.29 \
+  --nodegroup-name myeks-node-group \
+  --node-type t3.medium \
+  --nodes 2 \
+  --nodes-min 2 \
+  --nodes-max 3 \
+  --managed
+
+
+  link: pre req--->  https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
