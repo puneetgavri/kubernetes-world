@@ -1,4 +1,4 @@
-#Kubernetes – Requests and Limits in Kubernetes
+# Requests and Limits in Kubernetes
 
 In **Kubernetes**, **requests** and **limits** are resource management settings defined in a container's specification. They help ensure your applications run reliably and efficiently on the cluster by controlling CPU and memory (RAM) usage.
 
