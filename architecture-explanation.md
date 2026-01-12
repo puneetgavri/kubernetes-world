@@ -112,4 +112,29 @@ It is a process that runs on each node in the cluster.
 When a Service is created, kube-proxy sets up the necessary routing rules.  
 **For example, if a Service with a cluster IP is created, kube-proxy ensures that any traffic sent to that IP is appropriately routed to one of the Pods backing the Service.**
 
+
+
+## ADD-Ons
+#### 1. Metrics Server
+The Metrics Server is a cluster-wide aggregator of resource usage data, running as a pod in the control plane (typically in the kube-system namespace).
+​
+Kubelets expose resource metrics (CPU, memory) via a metrics endpoint, which Metrics Server scrapes and aggregates for use by Horizontal Pod Autoscaler (HPA), kubectl top, and other components.
+​
+It enables cluster-wide monitoring and autoscaling decisions without requiring external monitoring stacks like Prometheus.
+
+### 2.  CNI (Container Network Interface) Plugin
+CNI plugins implement Kubernetes networking model, required for pod-to-pod communication across nodes.
+​
+Kubelet invokes CNI plugins to set up pod network interfaces, assign IP addresses, and configure routes when pods are created or deleted.
+​
+Common plugins: Calico, Flannel, Cilium, Weave Net—enabling the pod network mentioned above.
+
+### 3. CoreDNS
+CoreDNS provides cluster DNS resolution as pods deployed via Deployment in kube-system namespace (typically 2 replicas for HA).
+​
+It resolves Kubernetes DNS names like my-service.default.svc.cluster.local for service discovery within the cluster.
+​
+Reachable via ClusterIP Service; integrates with kube-proxy for pod access.
+
+
 ***
